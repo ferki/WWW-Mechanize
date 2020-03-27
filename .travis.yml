@@ -7,34 +7,11 @@ addons:
 language: perl
 dist: trusty
 perl:
-  - blead
-  - dev
-  - '5.30'
-  - '5.28'
-  - '5.26'
-  - '5.24'
-  - '5.22'
-  - '5.20'
-  - '5.18'
-  - '5.16'
-  - '5.14'
   - '5.12'
   - '5.10'
 cache:
   directories:
     - $HOME/perl5
-matrix:
-  allow_failures:
-    - perl: blead
-    - perl: dev
-    - env: AUTHOR_TESTING=0 COVERAGE=1
-      perl: '5.28'
-  fast_finish: 1
-  include:
-    - env: AUTHOR_TESTING=0 COVERAGE=1
-      perl: '5.28'
-    - env: AUTHOR_TESTING=1 AUTOMATED_TESTING=1 RELEASE_TESTING=1 COVERAGE=0
-      perl: '5.28'
 env:
   global:
     - AUTHOR_TESTING=1
@@ -42,6 +19,10 @@ env:
 before_install:
   - eval $(curl https://travis-perl.github.io/init) --auto --always-upgrade-modules
   - cpanm Test::Memory::Cycle Test::Taint || true
+script:
+  - perl Makefile.PL && make
+  - make TEST_VERBOSE=1 TEST_FILES='xt/author/live/*.t' test || true
+  - perl -Ilib xt/author/live/*.t
 ### __app_cisetup__
 # ---
 # force_threaded_perls: 0
